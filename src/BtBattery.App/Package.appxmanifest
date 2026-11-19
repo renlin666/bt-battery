@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  未打包的 exe 不会自动使用这份清单。bluetoothapis 和 cfgmgr32 不需要它。
+  如果以后用 Windows Application Packaging Project 打成 MSIX，把这份能力声明带上，
+  GATT 电池服务（0x180F）才不会因为缺少 bluetooth 设备能力而被拒绝。
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  IgnorableNamespaces="uap mp">
+  <Identity Name="BtBattery" Publisher="CN=蓝牙电量" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>蓝牙电量</DisplayName>
+    <PublisherDisplayName>蓝牙电量</PublisherDisplayName>
+    <Logo>Assets\app.ico</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+  <Capabilities>
+    <DeviceCapability Name="bluetooth" />
+  </Capabilities>
+  <Applications>
+    <Application Id="App" Executable="蓝牙电量.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="蓝牙电量" Description="在通知区域显示已连接蓝牙配件的电量" Square150x150Logo="Assets\app.ico" Square44x44Logo="Assets\app.ico" BackgroundColor="transparent" />
+    </Application>
+  </Applications>
+</Package>

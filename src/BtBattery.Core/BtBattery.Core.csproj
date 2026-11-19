@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>BtBattery.Core</RootNamespace>
+    <AssemblyName>BtBattery.Core</AssemblyName>
+    <Description>蓝牙电量的设备分类、电量换算与设置模型。不依赖 Windows，便于测试。</Description>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

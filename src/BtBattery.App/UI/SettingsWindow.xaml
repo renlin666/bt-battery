@@ -1,0 +1,82 @@
+<Window x:Class="BtBattery.App.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="设置 — 蓝牙电量"
+        Width="480"
+        SizeToContent="Height"
+        MaxHeight="760"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{DynamicResource WindowBrush}"
+        Foreground="{DynamicResource TextBrush}"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True">
+  <Window.Resources>
+    <SolidColorBrush x:Key="WindowBrush" Color="#F3F3F3"/>
+    <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="TextBrush" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="MutedBrush" Color="#5E5E5E"/>
+    <SolidColorBrush x:Key="StrokeBrush" Color="#E5E5E5"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#0067C0"/>
+  </Window.Resources>
+  <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="18">
+    <StackPanel>
+      <TextBlock Text="蓝牙电量" FontSize="20" FontWeight="SemiBold"/>
+      <TextBlock Text="在时钟旁边看已连接配件的电量，不用再打开快速设置。" Margin="0,4,0,14" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap"/>
+
+      <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+        <StackPanel>
+          <TextBlock Text="启动与刷新" FontWeight="SemiBold" Margin="0,0,0,8"/>
+          <CheckBox x:Name="StartWithWindowsBox" Content="登录 Windows 后自动启动" Checked="OnChanged" Unchecked="OnChanged"/>
+          <DockPanel Margin="0,10,0,0">
+            <TextBlock Text="自动刷新间隔" VerticalAlignment="Center"/>
+            <ComboBox x:Name="IntervalBox" Width="120" HorizontalAlignment="Right" SelectionChanged="OnIntervalChanged"/>
+          </DockPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+        <StackPanel>
+          <TextBlock Text="托盘里显示哪些配件" FontWeight="SemiBold"/>
+          <TextBlock Text="手机、电脑和音箱不会出现。键鼠一体的设备，在勾选鼠标或键盘时显示。" Margin="0,4,0,8" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap"/>
+          <CheckBox x:Name="ShowMouseBox" Content="鼠标" Margin="0,2" Checked="OnChanged" Unchecked="OnChanged"/>
+          <CheckBox x:Name="ShowKeyboardBox" Content="键盘" Margin="0,2" Checked="OnChanged" Unchecked="OnChanged"/>
+          <CheckBox x:Name="ShowHeadsetBox" Content="耳机、耳塞、头戴" Margin="0,2" Checked="OnChanged" Unchecked="OnChanged"/>
+          <CheckBox x:Name="ShowGamepadBox" Content="游戏手柄" Margin="0,2" Checked="OnChanged" Unchecked="OnChanged"/>
+        </StackPanel>
+      </Border>
+
+      <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+        <StackPanel>
+          <TextBlock Text="读不到电量时" FontWeight="SemiBold" Margin="0,0,0,8"/>
+          <RadioButton x:Name="UnknownShowRadio" GroupName="UnknownBattery" Content="仍在托盘显示，右下角用「—」标出" Margin="0,2" Checked="OnChanged"/>
+          <RadioButton x:Name="UnknownHideRadio" GroupName="UnknownBattery" Content="不放入托盘（打开设备列表仍然能看到）" Margin="0,2" Checked="OnChanged"/>
+          <TextBlock Text="图标颜色" FontWeight="SemiBold" Margin="0,12,0,8"/>
+          <RadioButton x:Name="ThemeFollowRadio" GroupName="IconTheme" Content="跟随任务栏（深色任务栏用白色图标）" Margin="0,2" Checked="OnChanged"/>
+          <RadioButton x:Name="ThemeLightRadio" GroupName="IconTheme" Content="始终白色图标，适合深色任务栏" Margin="0,2" Checked="OnChanged"/>
+          <RadioButton x:Name="ThemeDarkRadio" GroupName="IconTheme" Content="始终黑色图标，适合浅色任务栏" Margin="0,2" Checked="OnChanged"/>
+        </StackPanel>
+      </Border>
+
+      <Border Background="{DynamicResource CardBrush}" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+        <StackPanel>
+          <TextBlock Text="让图标留在时钟旁边" FontWeight="SemiBold"/>
+          <TextBlock Margin="0,6,0,0" TextWrapping="Wrap" LineHeight="20"
+                     Text="Windows 11 会把新的托盘图标收进时钟左边的向上箭头「^」里。点开它，按住「蓝牙电量」和每个设备图标，拖到音量旁边。拖出来之后会一直留在那里。系统没有给第三方图标可靠的“始终显示”开关。"/>
+          <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" LineHeight="20" Foreground="{DynamicResource MutedBrush}"
+                     Text="电量来自 Windows 蓝牙协议栈写入的设备属性，和「设置 → 蓝牙和设备」是同一类数据。读不到时不会用厂商私有协议去猜。"/>
+        </StackPanel>
+      </Border>
+
+      <DockPanel Margin="0,0,0,8">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+          <Button Content="立即刷新" Padding="12,6" Margin="0,0,8,0" Click="OnRefresh"/>
+          <Button Content="复制诊断信息" Padding="12,6" Margin="0,0,8,0" Click="OnCopy"/>
+          <Button Content="关闭" Padding="12,6" IsCancel="True" Click="OnClose"/>
+        </StackPanel>
+        <TextBlock x:Name="StatusText" VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap"/>
+      </DockPanel>
+    </StackPanel>
+  </ScrollViewer>
+</Window>
