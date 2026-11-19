@@ -12,6 +12,8 @@ namespace BtBattery.App;
 /// </summary>
 internal sealed class BatteryEnricher
 {
+    private const int MaxGattReadsPerScan = 4;
+    private static readonly TimeSpan GattRetryInterval = TimeSpan.FromMinutes(10);
     private readonly Dictionary<string, GattCacheEntry> _gattCache = new(StringComparer.OrdinalIgnoreCase);
     private bool _gattBlocked;
 
@@ -60,24 +62,26 @@ internal sealed class BatteryEnricher
         List<DeviceObservation> observations,
         CancellationToken cancellationToken)
     {
-        var pending = devices
+        // 未尝试过的设备排在最前，其余按上次尝试的时间从早到晚处理。
+        var candidates = devices
             .Where(device => device.IsConnected && DeviceKindLabels.IsAccessory(device.Kind) && !device.Battery.IsKnown)
-            .Take(4)
-            .ToList();
+            .OrderBy(device => _gattCache.GetValueOrDefault(device.Address)?.At);
 
-        foreach (var device in pending)
+        var reads = 0;
+        foreach (var device in candidates)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (_gattCache.TryGetValue(device.Address, out var cached)
-                && (_gattBlocked || DateTimeOffset.UtcNow - cached.At < TimeSpan.FromMinutes(10)))
+                && (_gattBlocked || DateTimeOffset.UtcNow - cached.At < GattRetryInterval))
             {
                 observations.Add(cached.Observation);
                 continue;
             }
 
-            if (_gattBlocked)
+            if (_gattBlocked || reads >= MaxGattReadsPerScan)
                 continue;
 
+            reads++;
             var observation = await ReadGattAsync(device.Address, cancellationToken).ConfigureAwait(false);
             _gattCache[device.Address] = new GattCacheEntry(DateTimeOffset.UtcNow, observation);
             observations.Add(observation);
@@ -85,7 +89,6 @@ internal sealed class BatteryEnricher
             {
                 _gattBlocked = true;
                 AppLog.Info("GATT 电池服务拒绝访问。这一次运行不再重复尝试。未打包的程序有时没有 bluetooth 设备能力。");
-                break;
             }
         }
     }
